@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enter Room</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="parent">
+        <div class="child">
+            <h1>Enter Room</h1>
+            <form action="" method="POST">
+                {% csrf_token %}
+                <label for="username">Username</label>
+                <input type="text" placeholder="Username" name="username" id="username" required>
+                <label for="room">Room name</label>
+                <input type="text" placeholder="Room name" name="room" id="room" required>
+                <button type="submit">Join</button>
+            </form>
+        </div>
+    </div>
+</body>
+<style>
+body {
+    font-family: 'Roboto', Arial, sans-serif;
+    background: linear-gradient(135deg, #10131a 0%, #1a233a 100%);
+    min-height: 100vh;
+    color: #e3e3e3;
+}
+.parent {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.child {
+    background: #181a20;
+    padding: 40px 30px 30px 30px;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.25);
+    width: 350px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+h1 {
+    color: #4ea1f7;
+    margin-bottom: 24px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+label {
+    margin: 10px 0 5px 0;
+    color: #b0b8c1;
+    font-weight: 500;
+}
+input {
+    padding: 12px;
+    border: 1px solid #4ea1f7;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-size: 1rem;
+    outline: none;
+    background: #23242b;
+    color: #e3e3e3;
+    transition: border 0.2s, background 0.2s;
+}
+input:focus {
+    border: 2px solid #4ea1f7;
+    background: #181a20;
+}
+button {
+    background: linear-gradient(90deg, #4ea1f7 60%, #1a233a 100%);
+    color: #fff;
+    padding: 12px 0;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    margin-top: 10px;
+}
+button:hover {
+    background: linear-gradient(90deg, #1a233a 60%, #4ea1f7 100%);
+    transform: translateY(-2px) scale(1.03);
+}
+.room-list, .user-list {
+    margin-top: 20px;
+    width: 100%;
+}
+.room-list h3, .user-list h3 {
+    color: #4ea1f7;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+.room-list ul, .user-list ul {
+    list-style-type: none;
+    padding: 0;
+    width: 100%;
+}
+.room-list li, .user-list li {
+    margin-bottom: 10px;
+}
+.room-btn, .user-btn {
+    background: #23242b;
+    color: #4ea1f7;
+    padding: 10px;
+    border: 1px solid #4ea1f7;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s, transform 0.2s;
+    width: 100%;
+    text-align: left;
+    font-weight: 600;
+}
+.room-btn:hover, .user-btn:hover {
+    background: #4ea1f7;
+    color: #181a20;
+    transform: translateY(-2px) scale(1.03);
+}
+</style>
+</html>
