@@ -24,9 +24,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-=m1^$ql(%@l&m_d()&st30d!b^hc5cjl5@9!+*mlheo)v&o(y='
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Allow toggling DEBUG via environment for deploys; default to False in prod
+DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = []
+# Update ALLOWED_HOSTS to include your deployed domain(s)
+ALLOWED_HOSTS = [
+    'chatting-app-01-i6aa.onrender.com',
+    'localhost',
+    '127.0.0.1',
+]
+
+# CSRF trusted origins for secure POSTs (include https://)
+CSRF_TRUSTED_ORIGINS = [
+    'https://chatting-app-01-i6aa.onrender.com',
+]
 
 
 # Application definition
