@@ -54,22 +54,49 @@ let socketRetry = 0;
 function connectSocket() {
     socket = new WebSocket(wsEndpoint);
 
-    socket.addEventListener('open', () => {
+    socket.onopen = function () {
         console.log('[WS] connected');
         socketRetry = 0;
-    });
+    };
 
-    socket.addEventListener('close', (ev) => {
+    socket.onclose = function (ev) {
         console.warn('[WS] closed', ev);
         // try reconnect with exponential backoff (max 1 minute)
         socketRetry += 1;
         const delay = Math.min(60000, Math.pow(2, socketRetry) * 1000);
         setTimeout(connectSocket, delay);
-    });
+    };
 
-    socket.addEventListener('error', (err) => {
+    socket.onerror = function (err) {
         console.error('[WS] error', err);
-    });
+    };
+
+    // ensure a single onmessage handler for this socket instance
+    socket.onmessage = function (event) {
+        console.log('[WS] incoming message', event.data);
+        try {
+            const messageData = JSON.parse(event.data)['message'];
+            var sender = messageData['sender'];
+            var message = messageData['message'];
+            var chatContainer = document.getElementById('chatContainer');
+            if (sender != currentUser) {
+                chatContainer.innerHTML += `
+                    <div class="bubble left">
+                        <span class="sender">${sender}</span>
+                        <div class="text">${message}</div>
+                    </div>`;
+            } else {
+                chatContainer.innerHTML += `
+                    <div class="bubble right">
+                        <span class="sender">You</span>
+                        <div class="text">${message}</div>
+                    </div>`;
+            }
+            scrollToBottom();
+        } catch (e) {
+            console.error('Failed to parse WS message', e);
+        }
+    };
 }
 connectSocket();
 const currentUser = "{{ user|escapejs }}";
@@ -91,26 +118,7 @@ document.getElementById('message-form').addEventListener('submit', function(even
     messageInput.value = '';
 });
 
-socket.addEventListener("message", (event) => {
-    const messageData = JSON.parse(event.data)['message'];
-    var sender = messageData['sender'];
-    var message = messageData['message'];
-    var chatContainer = document.getElementById('chatContainer');
-    if (sender != currentUser) {
-        chatContainer.innerHTML += `
-            <div class="bubble left">
-                <span class="sender">${sender}</span>
-                <div class="text">${message}</div>
-            </div>`;
-    } else {
-        chatContainer.innerHTML += `
-            <div class="bubble right">
-                <span class="sender">You</span>
-                <div class="text">${message}</div>
-            </div>`;
-    }
-    scrollToBottom();
-});
+// message handler is attached to the socket in connectSocket via socket.onmessage
 </script>
 <style>
 body {
