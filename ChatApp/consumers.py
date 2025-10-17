@@ -38,7 +38,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
         }
         payload = json.dumps({'message': response_data})
         print(f"[ChatConsumer] sending payload: {payload}")
+        # Save message in DB for persistence
+        await self.create_message(data)
         await self.send(text_data=payload)
 
-    # Removed create_message, no longer saving to database
+    @database_sync_to_async
+    def create_message(self, data):
+        try:
+            get_room_by_name = Room.objects.get(room_name=data.get('room_name'))
+        except Room.DoesNotExist:
+            get_room_by_name = Room.objects.create(room_name=data.get('room_name'))
+        Message.objects.create(room=get_room_by_name, sender=data.get('sender'), message=data.get('message'))
         
