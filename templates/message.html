@@ -49,7 +49,29 @@ window.onload = scrollToBottom;
 
 const websocketProtocol = window.location.protocol === "https:" ? "wss" : "ws";
 const wsEndpoint = `${websocketProtocol}://${window.location.host}/ws/notification/{{room_name}}/`;
-const socket = new WebSocket(wsEndpoint);
+let socket;
+let socketRetry = 0;
+function connectSocket() {
+    socket = new WebSocket(wsEndpoint);
+
+    socket.addEventListener('open', () => {
+        console.log('[WS] connected');
+        socketRetry = 0;
+    });
+
+    socket.addEventListener('close', (ev) => {
+        console.warn('[WS] closed', ev);
+        // try reconnect with exponential backoff (max 1 minute)
+        socketRetry += 1;
+        const delay = Math.min(60000, Math.pow(2, socketRetry) * 1000);
+        setTimeout(connectSocket, delay);
+    });
+
+    socket.addEventListener('error', (err) => {
+        console.error('[WS] error', err);
+    });
+}
+connectSocket();
 const currentUser = "{{ user|escapejs }}";
 
 document.getElementById('message-form').addEventListener('submit', function(event){
@@ -57,13 +79,15 @@ document.getElementById('message-form').addEventListener('submit', function(even
     const messageInput = document.getElementById('msg');
     const message = messageInput.value.trim();
     if (!message) return;
-    socket.send(
-        JSON.stringify({
+    if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify({
             'message': message,
             'room_name': '{{room_name}}',
             'sender': currentUser,
-        })
-    );
+        }));
+    } else {
+        console.warn('Socket not open; message not sent');
+    }
     messageInput.value = '';
 });
 
