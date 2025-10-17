@@ -85,26 +85,35 @@ TEMPLATES = [
 WSGI_APPLICATION = 'ChatProject.wsgi.application'
 ASGI_APPLICATION = "ChatProject.asgi.application"
 # Use Redis channel layer in production. Set REDIS_URL in environment (e.g. redis://:<password>@host:port)
+# Temporarily force InMemoryChannelLayer to avoid Redis connection issues
 REDIS_URL = os.environ.get('REDIS_URL')
 
-# Configure channel layers based on environment
-if REDIS_URL:
-    # Production: Use Redis
-    CHANNEL_LAYERS = {
-        'default': {
-            'BACKEND': 'channels_redis.core.RedisChannelLayer',
-            'CONFIG': {
-                'hosts': [REDIS_URL],
-            },
-        },
-    }
-else:
-    # Development: Use in-memory channel layer
-    CHANNEL_LAYERS = {
-        'default': {
-            'BACKEND': 'channels.layers.InMemoryChannelLayer',
-        },
-    }
+# Force use of InMemoryChannelLayer for now to avoid Redis connection issues
+# Uncomment the Redis configuration below when you have a proper Redis service
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
+
+# Redis configuration (commented out until Redis service is available)
+# if REDIS_URL:
+#     # Production: Use Redis
+#     CHANNEL_LAYERS = {
+#         'default': {
+#             'BACKEND': 'channels_redis.core.RedisChannelLayer',
+#             'CONFIG': {
+#                 'hosts': [REDIS_URL],
+#             },
+#         },
+#     }
+# else:
+#     # Development: Use in-memory channel layer
+#     CHANNEL_LAYERS = {
+#         'default': {
+#             'BACKEND': 'channels.layers.InMemoryChannelLayer',
+#         },
+#     }
 
 
 # Database
